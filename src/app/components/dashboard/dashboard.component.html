@@ -1,0 +1,85 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <!-- Cards informativos -->
+    <div class="info-cards">
+      <div class="card card-primary">
+        <div class="card-content">
+          <div class="card-number">{{ pet().daysWithoutNicotine }}</div>
+          <div class="card-label">Dias sem nicotina</div>
+          <div class="card-subtext">Parabéns! Continue assim!</div>
+        </div>
+        <div class="card-icon">🌱</div>
+      </div>
+
+      <div class="card card-success">
+        <div class="card-icon">💵</div>
+        <div class="card-content">
+          <div class="card-label">Dinheiro economizado</div>
+          <div class="card-number">${{ pet().moneysaved }}</div>
+        </div>
+      </div>
+
+      <div class="card card-warning">
+        <div class="card-icon">🪙</div>
+        <div class="card-content">
+          <div class="card-label">VCoins</div>
+          <div class="card-number">{{ pet().vcoins }}</div>
+          <div class="card-subtext">Saldo mensal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pet Central -->
+    <div class="pet-section">
+      <div class="pet-card">
+        <div class="pet-image">🐕</div>
+        <div class="pet-name">Seu pet está feliz de você!</div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn btn-success" (click)="addPuff()">
+        <span class="btn-icon">☁️</span>
+        <span class="btn-text">+1 Puff</span>
+      </button>
+      <button class="btn btn-primary" (click)="addCigarette()">
+        <span class="btn-icon">🚬</span>
+        <span class="btn-text">+1 Cigarro</span>
+      </button>
+    </div>
+
+    <!-- Secondary Actions -->
+    <div class="secondary-actions">
+      <div class="action-item" (click)="reportCraving()">
+        <div class="action-icon">🍔</div>
+        <div class="action-content">
+          <div class="action-title">Tive vontade</div>
+          <div class="action-subtitle">Registre sua vontade</div>
+        </div>
+        <div class="action-arrow">›</div>
+      </div>
+
+      <div class="action-item emergency" (click)="emergencyHelp()">
+        <div class="action-icon">🆘</div>
+        <div class="action-content">
+          <div class="action-title">Emergência</div>
+          <div class="action-subtitle">Preciso de ajuda agora</div>
+        </div>
+        <div class="action-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Share Progress -->
+    <button class="btn btn-share" (click)="shareProgress()">
+      <span class="btn-icon">📤</span>
+      <span class="btn-text">Compartilhar progresso</span>
+    </button>
+  </div>
+</div>
