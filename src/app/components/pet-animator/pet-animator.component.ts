@@ -37,15 +37,15 @@ import { PetAnimatorService, SpriteConfig } from '../../services/pet-animator.se
 export class PetAnimatorComponent implements OnInit, OnDestroy {
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  canvasWidth = input(200);
-  canvasHeight = input(150);
+  canvasWidth = input(150);
+  canvasHeight = input(300);
 
   private spriteConfig: SpriteConfig = {
     imageUrl: '/dog01/idle/cute-dog01-idle.png',
-    frameWidth: 90,
-    frameHeight: 60,
+    frameWidth: 440,
+    frameHeight: 440,
     frameCount: 5,
-    framesPerSecond: 2  // 1 frame a cada 500ms = animação suave
+    framesPerSecond: 1  // 1 frame por segundo
   };
 
   constructor(private animatorService: PetAnimatorService) {
