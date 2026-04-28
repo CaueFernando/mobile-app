@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PetAnimatorComponent } from '../pet-animator/pet-animator.component';
 
 interface Pet {
   name: string;
@@ -12,7 +13,7 @@ interface Pet {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PetAnimatorComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
