@@ -6,6 +6,10 @@ import 'providers/theme_provider.dart';
 import 'providers/user_provider.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/history_screen.dart';
+import 'screens/onboarding/language_selection_screen.dart';
+import 'screens/onboarding/pet_name_screen.dart';
+import 'screens/onboarding/smoking_type_screen.dart';
+import 'screens/onboarding/usage_config_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/shop_screen.dart';
 import 'screens/statistics_screen.dart';
@@ -38,7 +42,22 @@ class StepToStopApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme(),
           themeMode:
               themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: const MainNavigationScreen(),
+          home: Consumer<UserProvider>(
+            builder: (context, userProvider, _) {
+              userProvider.initializeIfNeeded();
+              return userProvider.isConfigured
+                  ? const MainNavigationScreen()
+                  : const LanguageSelectionScreen();
+            },
+          ),
+          routes: {
+            '/main': (context) => const MainNavigationScreen(),
+            '/onboarding/language': (context) =>
+                const LanguageSelectionScreen(),
+            '/onboarding/pet-name': (context) => const PetNameScreen(),
+            '/onboarding/smoking-type': (context) => const SmokingTypeScreen(),
+            '/onboarding/usage-config': (context) => const UsageConfigScreen(),
+          },
           debugShowCheckedModeBanner: false,
         );
       },
@@ -78,11 +97,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Dashboard'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart), label: 'Estat\u00edsticas'),
+            icon: Icon(Icons.bar_chart),
+            label: 'Estat\u00edsticas',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Pet Shop'),
+            icon: Icon(Icons.shopping_cart),
+            label: 'Pet Shop',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.history), label: 'Hist\u00f3rico'),
+            icon: Icon(Icons.history),
+            label: 'Hist\u00f3rico',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/pet_model.dart';
+import '../models/user_model.dart';
 import '../providers/pet_provider.dart';
 import '../providers/user_provider.dart';
 import '../utils/constants.dart';
@@ -499,33 +500,43 @@ class _PrimaryActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final smokingType = context.watch<UserProvider>().user?.smokingType;
+    final showVape = smokingType == null ||
+        smokingType == SmokingType.vape ||
+        smokingType == SmokingType.both;
+    final showCigarette = smokingType == null ||
+        smokingType == SmokingType.cigarette ||
+        smokingType == SmokingType.both;
+
     return Row(
       children: [
-        Expanded(
-          child: _BigActionButton(
-            color: AppColors.primary,
-            icon: Icons.cloud,
-            title: AppTexts.t('addPuff'),
-            subtitle: 'Vape',
-            onTap: () {
-              petProvider.logPuff();
-              context.read<UserProvider>().incrementPuffs();
-            },
+        if (showVape)
+          Expanded(
+            child: _BigActionButton(
+              color: AppColors.primary,
+              icon: Icons.cloud,
+              title: AppTexts.t('addPuff'),
+              subtitle: 'Vape',
+              onTap: () {
+                petProvider.logPuff();
+                context.read<UserProvider>().incrementPuffs();
+              },
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _BigActionButton(
-            color: AppColors.secondary,
-            icon: Icons.smoking_rooms,
-            title: AppTexts.t('addCigarette'),
-            subtitle: 'Cigarro',
-            onTap: () {
-              petProvider.logCigarette();
-              context.read<UserProvider>().incrementCigarettes();
-            },
+        if (showVape && showCigarette) const SizedBox(width: 12),
+        if (showCigarette)
+          Expanded(
+            child: _BigActionButton(
+              color: AppColors.secondary,
+              icon: Icons.smoking_rooms,
+              title: AppTexts.t('addCigarette'),
+              subtitle: 'Cigarro',
+              onTap: () {
+                petProvider.logCigarette();
+                context.read<UserProvider>().incrementCigarettes();
+              },
+            ),
           ),
-        ),
       ],
     );
   }
