@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/pet_provider.dart';
-import 'providers/user_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/user_provider.dart';
 import 'screens/dashboard_screen.dart';
-import 'screens/statistics_screen.dart';
-import 'screens/shop_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/shop_screen.dart';
+import 'screens/statistics_screen.dart';
 import 'themes/app_theme.dart';
 import 'utils/constants.dart';
 
@@ -26,7 +26,7 @@ void main() {
 }
 
 class StepToStopApp extends StatelessWidget {
-  const StepToStopApp({Key? key}) : super(key: key);
+  const StepToStopApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,8 @@ class StepToStopApp extends StatelessWidget {
           title: AppTexts.appName,
           theme: AppTheme.lightTheme(),
           darkTheme: AppTheme.darkTheme(),
-          themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          themeMode:
+              themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           home: const MainNavigationScreen(),
           debugShowCheckedModeBanner: false,
         );
@@ -46,7 +47,7 @@ class StepToStopApp extends StatelessWidget {
 }
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({Key? key}) : super(key: key);
+  const MainNavigationScreen({super.key});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -55,12 +56,12 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentPageIndex = 0;
 
-  final List<Widget> _screens = [
-    const DashboardScreen(),
-    const StatisticsScreen(),
-    const ShopScreen(),
-    const HistoryScreen(),
-    const ProfileScreen(),
+  final List<Widget> _screens = const [
+    DashboardScreen(),
+    StatisticsScreen(),
+    ShopScreen(),
+    HistoryScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -72,31 +73,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPageIndex,
-        onTap: (index) {
-          setState(() => _currentPageIndex = index);
-        },
+        onTap: (index) => setState(() => _currentPageIndex = index),
         type: BottomNavigationBarType.fixed,
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Dashboard'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Dashboard',
-          ),
+              icon: Icon(Icons.bar_chart), label: 'Estat\u00edsticas'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Estatísticas',
-          ),
+              icon: Icon(Icons.shopping_cart), label: 'Pet Shop'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Shop',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Histórico',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
+              icon: Icon(Icons.history), label: 'Hist\u00f3rico'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
     );

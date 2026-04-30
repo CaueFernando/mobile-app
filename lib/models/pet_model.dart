@@ -1,10 +1,11 @@
-import 'package:flutter/foundation.dart';
+enum PetStage { newborn, puppy, young, adult, mature, elder }
 
-enum PetStage { newborn, puppy, young, adult, mature, elderly }
+enum PetMood { happy, excited, sad, sleeping, proud }
 
 class Pet {
   final String name;
   final PetStage stage;
+  final PetMood mood;
   final int daysWithoutNicotine;
   final double moneySaved;
   final int vcoins;
@@ -16,6 +17,7 @@ class Pet {
   const Pet({
     required this.name,
     required this.stage,
+    required this.mood,
     required this.daysWithoutNicotine,
     required this.moneySaved,
     required this.vcoins,
@@ -29,6 +31,7 @@ class Pet {
   Pet copyWith({
     String? name,
     PetStage? stage,
+    PetMood? mood,
     int? daysWithoutNicotine,
     double? moneySaved,
     int? vcoins,
@@ -40,6 +43,7 @@ class Pet {
     return Pet(
       name: name ?? this.name,
       stage: stage ?? this.stage,
+      mood: mood ?? this.mood,
       daysWithoutNicotine: daysWithoutNicotine ?? this.daysWithoutNicotine,
       moneySaved: moneySaved ?? this.moneySaved,
       vcoins: vcoins ?? this.vcoins,
@@ -55,6 +59,7 @@ class Pet {
     return {
       'name': name,
       'stage': stage.toString().split('.').last,
+      'mood': mood.toString().split('.').last,
       'daysWithoutNicotine': daysWithoutNicotine,
       'moneySaved': moneySaved,
       'vcoins': vcoins,
@@ -72,6 +77,9 @@ class Pet {
       stage: PetStage.values.firstWhere(
         (e) => e.toString().split('.').last == json['stage'],
       ),
+      mood: PetMood.values.firstWhere(
+        (e) => e.toString().split('.').last == (json['mood'] ?? 'happy'),
+      ),
       daysWithoutNicotine: json['daysWithoutNicotine'],
       moneySaved: json['moneySaved'].toDouble(),
       vcoins: json['vcoins'],
@@ -83,5 +91,6 @@ class Pet {
   }
 
   @override
-  String toString() => 'Pet(name: $name, stage: $stage, days: $daysWithoutNicotine)';
+  String toString() =>
+      'Pet(name: $name, stage: $stage, days: $daysWithoutNicotine)';
 }

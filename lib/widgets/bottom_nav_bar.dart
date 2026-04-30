@@ -6,10 +6,10 @@ class BottomNavBar extends StatelessWidget {
   final Function(int) onTap;
 
   const BottomNavBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,25 +17,25 @@ class BottomNavBar extends StatelessWidget {
       currentIndex: currentIndex,
       onTap: onTap,
       type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(
+      items: [
+        const BottomNavigationBarItem(
           icon: Icon(Icons.home),
-          label: AppTexts.dashboard,
+          label: 'Dashboard',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.bar_chart),
+          icon: const Icon(Icons.bar_chart),
           label: AppTexts.statistics,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart),
+          icon: const Icon(Icons.shopping_cart),
           label: AppTexts.shop,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.history),
+          icon: const Icon(Icons.history),
           label: AppTexts.history,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
+          icon: const Icon(Icons.person),
           label: AppTexts.profile,
         ),
       ],

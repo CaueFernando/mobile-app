@@ -34,10 +34,19 @@ yarn-error.log
 .sass-cache/
 /connect.lock
 /coverage
+/build/
+/.dart_tool/
+/.flutter-plugins
+/.flutter-plugins-dependencies
+/.pub-cache/
+/.pub/
 /libpeerconnection.log
 testem.log
 /typings
 __screenshots__/
+
+# Flutter generated metadata kept local unless the team chooses otherwise
+*.iml
 
 # System files
 .DS_Store

@@ -9,18 +9,18 @@ class StatCard extends StatelessWidget {
   final Color? backgroundColor;
 
   const StatCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     this.subtitle,
     required this.icon,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: backgroundColor ?? AppColors.primary.withOpacity(0.1),
+      color: backgroundColor ?? AppColors.primary.withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(AppSizes.paddingMD),
         child: Column(

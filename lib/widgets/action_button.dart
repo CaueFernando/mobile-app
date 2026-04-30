@@ -10,14 +10,14 @@ class ActionButton extends StatelessWidget {
   final bool isFullWidth;
 
   const ActionButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.icon,
     required this.onPressed,
     this.backgroundColor,
     this.textColor,
     this.isFullWidth = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
