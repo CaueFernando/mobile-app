@@ -25,10 +25,11 @@ class _SmokingTypeScreenState extends State<SmokingTypeScreen> {
       subtitle: 'Vamos calcular quanto voc\u00ea vai economizar.',
       buttonLabel: 'Continuar',
       showBack: true,
-      onContinue: () {
-        context
+      onContinue: () async {
+        await context
             .read<UserProvider>()
             .updateConfiguration(smokingType: _selectedType);
+        if (!context.mounted) return;
         Navigator.pushNamed(context, '/onboarding/usage-config');
       },
       child: Column(

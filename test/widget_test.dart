@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:steptostop_app/data/user_repository.dart';
 import 'package:steptostop_app/main.dart';
+import 'package:steptostop_app/models/user_model.dart';
 import 'package:steptostop_app/providers/pet_provider.dart';
 import 'package:steptostop_app/providers/theme_provider.dart';
 import 'package:steptostop_app/providers/user_provider.dart';
@@ -9,11 +11,34 @@ import 'package:steptostop_app/providers/user_provider.dart';
 void main() {
   testWidgets('onboarding completes all four steps and opens dashboard',
       (tester) async {
+    final userProvider = UserProvider(userRepository: _FakeUserRepository());
+    await userProvider.updateUser(
+      User(
+        googleId: 'test-google-id-${DateTime.now().microsecondsSinceEpoch}',
+        name: 'Usuario Teste',
+        email: 'teste@example.com',
+        createdAt: DateTime(2026),
+        lastLogin: DateTime(2026),
+        totalPuffs: 0,
+        totalCigarettes: 0,
+        cravingsReported: 0,
+        language: 'pt',
+        petName: 'Puff',
+        smokingType: SmokingType.cigarette,
+        dailyUsage: 10,
+        vapePrice: 50,
+        vapeDurationDays: 7,
+        cigarettePackPrice: 10,
+        dailyCigarettes: 10,
+        isConfigured: false,
+      ),
+    );
+
     await tester.pumpWidget(
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => PetProvider()),
-          ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => userProvider),
           ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ],
         child: const StepToStopApp(),
@@ -48,6 +73,15 @@ void main() {
     expect(find.text('+1 Puff'), findsOneWidget);
     expect(find.text('+1 Cigarro'), findsOneWidget);
   });
+}
+
+class _FakeUserRepository extends UserRepository {
+  int _nextId = 1;
+
+  @override
+  Future<User> save(User user) async {
+    return user.id == null ? user.copyWith(id: _nextId++) : user;
+  }
 }
 
 Future<void> _tapVisibleText(WidgetTester tester, String text) async {

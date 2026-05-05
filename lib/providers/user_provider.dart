@@ -1,70 +1,43 @@
 import 'package:flutter/foundation.dart';
 
+import '../data/user_repository.dart';
 import '../models/user_model.dart';
+import '../services/google_auth_service.dart';
 
 class UserProvider extends ChangeNotifier {
+  UserProvider({
+    UserRepository? userRepository,
+    GoogleAuthService? googleAuthService,
+  })  : _userRepository = userRepository ?? UserRepository(),
+        _googleAuthService = googleAuthService ?? GoogleAuthService();
+
+  final UserRepository _userRepository;
+  final GoogleAuthService _googleAuthService;
+
   User? _user;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   User? get user => _user;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
   bool get isLoggedIn => _user != null;
   bool get isConfigured => _user?.isConfigured ?? false;
 
-  void initializeIfNeeded() {
-    _user ??= User(
-      name: 'Usuario',
-      email: 'user@example.com',
-      createdAt: DateTime.now(),
-      lastLogin: DateTime.now(),
-      totalPuffs: 0,
-      totalCigarettes: 0,
-      cravingsReported: 0,
-      language: 'pt',
-      petName: 'Puff',
-      smokingType: SmokingType.cigarette,
-      dailyUsage: 10,
-      vapePrice: 50,
-      vapeDurationDays: 7,
-      cigarettePackPrice: 10,
-      dailyCigarettes: 10,
-      isConfigured: false,
-    );
+  Future<void> signInWithGoogle() async {
+    await _run(() async {
+      final googleUser = await _googleAuthService.signIn();
+      _user = await _userRepository.upsertGoogleUser(
+        googleId: googleUser.id,
+        name: googleUser.name,
+        email: googleUser.email,
+        photoUrl: googleUser.photoUrl,
+      );
+    });
   }
 
-  void createUser({
-    required String name,
-    required String email,
-    required String language,
-    required String petName,
-    required SmokingType smokingType,
-    required int dailyUsage,
-    double vapePrice = 50,
-    int vapeDurationDays = 7,
-    double cigarettePackPrice = 10,
-    int dailyCigarettes = 10,
-  }) {
-    _user = User(
-      name: name,
-      email: email,
-      createdAt: DateTime.now(),
-      lastLogin: DateTime.now(),
-      totalPuffs: 0,
-      totalCigarettes: 0,
-      cravingsReported: 0,
-      language: language,
-      petName: petName,
-      smokingType: smokingType,
-      dailyUsage: dailyUsage,
-      vapePrice: vapePrice,
-      vapeDurationDays: vapeDurationDays,
-      cigarettePackPrice: cigarettePackPrice,
-      dailyCigarettes: dailyCigarettes,
-      isConfigured: true,
-    );
-    notifyListeners();
-  }
-
-  void updateConfiguration({
+  Future<void> updateConfiguration({
     String? language,
     String? petName,
     SmokingType? smokingType,
@@ -73,8 +46,9 @@ class UserProvider extends ChangeNotifier {
     int? vapeDurationDays,
     double? cigarettePackPrice,
     int? dailyCigarettes,
-  }) {
-    initializeIfNeeded();
+  }) async {
+    if (_user == null) return;
+
     _user = _user!.copyWith(
       language: language,
       petName: petName,
@@ -85,43 +59,67 @@ class UserProvider extends ChangeNotifier {
       cigarettePackPrice: cigarettePackPrice,
       dailyCigarettes: dailyCigarettes,
     );
+    _user = await _userRepository.save(_user!);
     notifyListeners();
   }
 
-  void markAsConfigured() {
-    initializeIfNeeded();
+  Future<void> markAsConfigured() async {
+    if (_user == null) return;
+
     _user = _user!.copyWith(isConfigured: true);
+    _user = await _userRepository.save(_user!);
     notifyListeners();
   }
 
-  void updateUser(User user) {
+  Future<void> updateUser(User user) async {
     _user = user.copyWith(lastLogin: DateTime.now());
+    _user = await _userRepository.save(_user!);
     notifyListeners();
   }
 
-  void incrementPuffs() {
-    if (_user != null) {
-      _user = _user!.copyWith(totalPuffs: _user!.totalPuffs + 1);
-      notifyListeners();
-    }
+  Future<void> incrementPuffs() async {
+    if (_user == null) return;
+
+    _user = _user!.copyWith(totalPuffs: _user!.totalPuffs + 1);
+    _user = await _userRepository.save(_user!);
+    notifyListeners();
   }
 
-  void incrementCigarettes() {
-    if (_user != null) {
-      _user = _user!.copyWith(totalCigarettes: _user!.totalCigarettes + 1);
-      notifyListeners();
-    }
+  Future<void> incrementCigarettes() async {
+    if (_user == null) return;
+
+    _user = _user!.copyWith(totalCigarettes: _user!.totalCigarettes + 1);
+    _user = await _userRepository.save(_user!);
+    notifyListeners();
   }
 
-  void incrementCravings() {
-    if (_user != null) {
-      _user = _user!.copyWith(cravingsReported: _user!.cravingsReported + 1);
-      notifyListeners();
-    }
+  Future<void> incrementCravings() async {
+    if (_user == null) return;
+
+    _user = _user!.copyWith(cravingsReported: _user!.cravingsReported + 1);
+    _user = await _userRepository.save(_user!);
+    notifyListeners();
   }
 
-  void logout() {
+  Future<void> logout() async {
+    await _googleAuthService.signOut();
     _user = null;
     notifyListeners();
+  }
+
+  Future<void> _run(Future<void> Function() action) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await action();
+    } catch (error) {
+      _errorMessage = 'Nao foi possivel entrar com Google. Tente novamente.';
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

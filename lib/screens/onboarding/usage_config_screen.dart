@@ -45,7 +45,7 @@ class _UsageConfigScreenState extends State<UsageConfigScreen> {
       subtitle: 'Vamos calcular quanto voc\u00ea vai economizar.',
       buttonLabel: 'Come\u00e7ar jornada',
       showBack: true,
-      onContinue: () {
+      onContinue: () async {
         if (!_formKey.currentState!.validate()) return;
 
         final vapePrice = _parseDouble(_vapePriceController.text);
@@ -53,14 +53,15 @@ class _UsageConfigScreenState extends State<UsageConfigScreen> {
         final packPrice = _parseDouble(_cigarettePackPriceController.text);
         final dailyCigarettes = _parseInt(_dailyCigarettesController.text);
 
-        context.read<UserProvider>().updateConfiguration(
-              vapePrice: vapePrice,
-              vapeDurationDays: vapeDuration,
-              cigarettePackPrice: packPrice,
-              dailyCigarettes: dailyCigarettes,
-              dailyUsage: showCigarette ? dailyCigarettes : vapeDuration,
-            );
-        context.read<UserProvider>().markAsConfigured();
+        await userProvider.updateConfiguration(
+          vapePrice: vapePrice,
+          vapeDurationDays: vapeDuration,
+          cigarettePackPrice: packPrice,
+          dailyCigarettes: dailyCigarettes,
+          dailyUsage: showCigarette ? dailyCigarettes : vapeDuration,
+        );
+        await userProvider.markAsConfigured();
+        if (!context.mounted) return;
         Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
       },
       child: Form(

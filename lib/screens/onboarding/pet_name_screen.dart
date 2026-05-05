@@ -34,11 +34,14 @@ class _PetNameScreenState extends State<PetNameScreen> {
       subtitle: 'Vamos preparar sua jornada para parar de fumar.',
       buttonLabel: 'Continuar',
       showBack: true,
-      onContinue: () {
+      onContinue: () async {
         if (!_formKey.currentState!.validate()) return;
 
         final petName = _controller.text.trim();
-        context.read<UserProvider>().updateConfiguration(petName: petName);
+        await context
+            .read<UserProvider>()
+            .updateConfiguration(petName: petName);
+        if (!context.mounted) return;
         context.read<PetProvider>().setPetName(petName);
         Navigator.pushNamed(context, '/onboarding/smoking-type');
       },

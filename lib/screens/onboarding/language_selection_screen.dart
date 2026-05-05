@@ -27,10 +27,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
           ? 'Um passo de cada vez.'
           : 'One step at a time.',
       buttonLabel: _selectedLanguage == 'pt' ? 'Continuar' : 'Continue',
-      onContinue: () {
-        context
+      onContinue: () async {
+        await context
             .read<UserProvider>()
             .updateConfiguration(language: _selectedLanguage);
+        if (!context.mounted) return;
         Navigator.pushNamed(context, '/onboarding/pet-name');
       },
       child: Column(
@@ -132,7 +133,7 @@ class OnboardingScaffold extends StatelessWidget {
   final String subtitle;
   final Widget child;
   final String buttonLabel;
-  final VoidCallback onContinue;
+  final Future<void> Function() onContinue;
   final bool showBack;
 
   @override
@@ -206,7 +207,9 @@ class OnboardingScaffold extends StatelessWidget {
                             width: double.infinity,
                             height: 58,
                             child: FilledButton(
-                              onPressed: onContinue,
+                              onPressed: () {
+                                onContinue();
+                              },
                               child: Text(
                                 buttonLabel,
                                 style: const TextStyle(

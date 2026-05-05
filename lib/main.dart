@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'data/local_database.dart';
 import 'providers/pet_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/user_provider.dart';
+import 'screens/auth/google_login_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/onboarding/language_selection_screen.dart';
@@ -16,7 +18,10 @@ import 'screens/statistics_screen.dart';
 import 'themes/app_theme.dart';
 import 'utils/constants.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalDatabase.instance.database;
+
   runApp(
     MultiProvider(
       providers: [
@@ -44,13 +49,14 @@ class StepToStopApp extends StatelessWidget {
               themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           home: Consumer<UserProvider>(
             builder: (context, userProvider, _) {
-              userProvider.initializeIfNeeded();
+              if (!userProvider.isLoggedIn) return const GoogleLoginScreen();
               return userProvider.isConfigured
                   ? const MainNavigationScreen()
                   : const LanguageSelectionScreen();
             },
           ),
           routes: {
+            '/login': (context) => const GoogleLoginScreen(),
             '/main': (context) => const MainNavigationScreen(),
             '/onboarding/language': (context) =>
                 const LanguageSelectionScreen(),

@@ -1,8 +1,11 @@
 enum SmokingType { cigarette, vape, both }
 
 class User {
+  final int? id;
+  final String? googleId;
   final String name;
   final String email;
+  final String? photoUrl;
   final DateTime createdAt;
   final DateTime lastLogin;
   final int totalPuffs;
@@ -19,8 +22,11 @@ class User {
   final bool isConfigured;
 
   const User({
+    this.id,
+    this.googleId,
     required this.name,
     required this.email,
+    this.photoUrl,
     required this.createdAt,
     required this.lastLogin,
     required this.totalPuffs,
@@ -51,8 +57,11 @@ class User {
   }
 
   User copyWith({
+    int? id,
+    String? googleId,
     String? name,
     String? email,
+    String? photoUrl,
     DateTime? createdAt,
     DateTime? lastLogin,
     int? totalPuffs,
@@ -69,8 +78,11 @@ class User {
     bool? isConfigured,
   }) {
     return User(
+      id: id ?? this.id,
+      googleId: googleId ?? this.googleId,
       name: name ?? this.name,
       email: email ?? this.email,
+      photoUrl: photoUrl ?? this.photoUrl,
       createdAt: createdAt ?? this.createdAt,
       lastLogin: lastLogin ?? this.lastLogin,
       totalPuffs: totalPuffs ?? this.totalPuffs,
@@ -90,8 +102,11 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
+      'googleId': googleId,
       'name': name,
       'email': email,
+      'photoUrl': photoUrl,
       'createdAt': createdAt.toIso8601String(),
       'lastLogin': lastLogin.toIso8601String(),
       'totalPuffs': totalPuffs,
@@ -111,8 +126,11 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      id: json['id'],
+      googleId: json['googleId'],
       name: json['name'],
       email: json['email'],
+      photoUrl: json['photoUrl'],
       createdAt: DateTime.parse(json['createdAt']),
       lastLogin: DateTime.parse(json['lastLogin']),
       totalPuffs: json['totalPuffs'],
