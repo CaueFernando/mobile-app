@@ -109,9 +109,13 @@ class GoogleLoginScreen extends StatelessWidget {
 
       if (!context.mounted) return;
 
-      final userId = userProvider.user?.id;
-      if (userId != null) {
-        await context.read<PetProvider>().loadWalletForUser(userId);
+      final user = userProvider.user;
+      final userId = user?.id;
+      if (userId != null && user != null) {
+        await context.read<PetProvider>().loadWalletForUser(
+              userId,
+              petName: user.petName,
+            );
       }
 
       if (!context.mounted) return;

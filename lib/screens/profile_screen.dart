@@ -85,7 +85,13 @@ class ProfileScreen extends StatelessWidget {
               labelText: 'Nome do pet',
               border: OutlineInputBorder(),
             ),
-            onFieldSubmitted: petProvider.setPetName,
+            onFieldSubmitted: (name) async {
+              final trimmed = name.trim();
+              if (trimmed.isEmpty) return;
+
+              petProvider.setPetName(trimmed);
+              await userProvider.updateConfiguration(petName: trimmed);
+            },
           ),
           const SizedBox(height: 12),
           SwitchListTile(

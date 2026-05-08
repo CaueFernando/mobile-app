@@ -39,10 +39,15 @@ class PetProvider extends ChangeNotifier {
   int get relapseCount => _relapseCount;
   List<String> get events => List.unmodifiable(_events);
 
-  Future<void> loadWalletForUser(int userId) async {
+  Future<void> loadWalletForUser(
+    int userId, {
+    required String petName,
+  }) async {
     final wallet = await _walletRepository.getOrCreateForUser(userId);
+    final trimmedPetName = petName.trim();
     _walletId = wallet.walletId;
     _pet = _pet.copyWith(
+      name: trimmedPetName.isEmpty ? _pet.name : trimmedPetName,
       moneySaved: wallet.moneySaved,
       vcoins: wallet.vcoins,
       lastUpdate: DateTime.now(),
