@@ -115,6 +115,7 @@ class UserProvider extends ChangeNotifier {
     try {
       await action();
     } catch (error) {
+      debugPrint('Google sign-in failed: $error');
       _errorMessage = 'Nao foi possivel entrar com Google. Tente novamente.';
       rethrow;
     } finally {

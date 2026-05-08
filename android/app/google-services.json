@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "869171502097",
+    "project_id": "steptostop-d1ceb",
+    "storage_bucket": "steptostop-d1ceb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:869171502097:android:ead11891ec595e71d6e5b0",
+        "android_client_info": {
+          "package_name": "com.example.steptostop_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "869171502097-p8dku2r3vdo95o513lnm3jfvtgkovjs4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.steptostop_app",
+            "certificate_hash": "9ba3d9c92c29151b7eb5705aa91ee49254a32a93"
+          }
+        },
+        {
+          "client_id": "869171502097-eglifjqk0oik2vh27cc415b1uubnjaf9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD64E9nzmXUUe9AwYL00YkSQCfTQmr9c8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "869171502097-eglifjqk0oik2vh27cc415b1uubnjaf9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

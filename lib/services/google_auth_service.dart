@@ -18,11 +18,17 @@ class GoogleAuthService {
   GoogleAuthService({GoogleSignIn? googleSignIn})
       : _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
 
+  static const String _serverClientId = String.fromEnvironment(
+    'GOOGLE_WEB_CLIENT_ID',
+  );
+
   final GoogleSignIn _googleSignIn;
   Future<void>? _initializeFuture;
 
   Future<void> initialize() {
-    return _initializeFuture ??= _googleSignIn.initialize();
+    return _initializeFuture ??= _googleSignIn.initialize(
+      serverClientId: _serverClientId.isEmpty ? null : _serverClientId,
+    );
   }
 
   Future<GoogleUserProfile> signIn() async {

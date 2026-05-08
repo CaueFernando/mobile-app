@@ -1,18 +1,28 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+
+import '../data/wallet_repository.dart';
 import '../models/pet_model.dart';
 import '../utils/constants.dart';
 
 class PetProvider extends ChangeNotifier {
+  PetProvider({WalletRepository? walletRepository})
+      : _walletRepository = walletRepository ?? WalletRepository();
+
+  final WalletRepository _walletRepository;
+  int? _walletId;
+
   Pet _pet = Pet(
     name: 'Puff',
-    stage: PetStage.puppy,
+    stage: PetStage.newborn,
     mood: PetMood.happy,
-    daysWithoutNicotine: 3,
-    moneySaved: 27.0,
-    vcoins: 45,
-    happiness: 92,
+    daysWithoutNicotine: 0,
+    moneySaved: 0.0,
+    vcoins: 0,
+    happiness: 100,
     health: 100,
-    createdAt: DateTime.now().subtract(const Duration(days: 3)),
+    createdAt: DateTime.now(),
     lastUpdate: DateTime.now(),
   );
 
@@ -29,7 +39,18 @@ class PetProvider extends ChangeNotifier {
   int get relapseCount => _relapseCount;
   List<String> get events => List.unmodifiable(_events);
 
-  void logNicotineFreeDay() {
+  Future<void> loadWalletForUser(int userId) async {
+    final wallet = await _walletRepository.getOrCreateForUser(userId);
+    _walletId = wallet.walletId;
+    _pet = _pet.copyWith(
+      moneySaved: wallet.moneySaved,
+      vcoins: wallet.vcoins,
+      lastUpdate: DateTime.now(),
+    );
+    notifyListeners();
+  }
+
+  void logNicotineFreeDay({double moneySavedDelta = 0}) {
     final newDays = _pet.daysWithoutNicotine + 1;
     var bonus = VCoinsReward.nicotineFreeDay;
 
@@ -37,15 +58,19 @@ class PetProvider extends ChangeNotifier {
     if (newDays == 30) bonus += VCoinsReward.thirtyDayStreak;
     if (_isMilestone(newDays)) bonus += VCoinsReward.milestone;
 
+    final newVCoins = (_pet.vcoins + bonus).clamp(0, 999999).toInt();
+    final newMoneySaved = _pet.moneySaved + moneySavedDelta;
+
     _pet = _pet.copyWith(
       daysWithoutNicotine: newDays,
       stage: _stageForDays(newDays),
       mood: _moodForCleanDay(newDays),
-      vcoins: (_pet.vcoins + bonus).clamp(0, 999999),
-      happiness: (_pet.happiness + 6).clamp(0, 100),
-      moneySaved: _pet.moneySaved + 9,
+      vcoins: newVCoins,
+      happiness: (_pet.happiness + 6).clamp(0, 100).toInt(),
+      moneySaved: newMoneySaved,
       lastUpdate: DateTime.now(),
     );
+    _recordWalletSnapshot();
     _events.insert(0, '+$bonus VCoins: nicotine-free day $newDays');
     notifyListeners();
   }
@@ -55,11 +80,13 @@ class PetProvider extends ChangeNotifier {
     _relapseCount += 1;
     _pet = _pet.copyWith(
       mood: PetMood.sad,
-      vcoins: (_pet.vcoins + VCoinsReward.relapsePenalty).clamp(0, 999999),
-      happiness: (_pet.happiness - 12).clamp(0, 100),
-      health: (_pet.health - 3).clamp(0, 100),
+      vcoins:
+          (_pet.vcoins + VCoinsReward.relapsePenalty).clamp(0, 999999).toInt(),
+      happiness: (_pet.happiness - 12).clamp(0, 100).toInt(),
+      health: (_pet.health - 3).clamp(0, 100).toInt(),
       lastUpdate: DateTime.now(),
     );
+    _recordCoins();
     _events.insert(0, 'Relapse logged: puff');
     notifyListeners();
   }
@@ -69,11 +96,13 @@ class PetProvider extends ChangeNotifier {
     _relapseCount += 1;
     _pet = _pet.copyWith(
       mood: PetMood.sad,
-      vcoins: (_pet.vcoins + VCoinsReward.relapsePenalty).clamp(0, 999999),
-      happiness: (_pet.happiness - 18).clamp(0, 100),
-      health: (_pet.health - 6).clamp(0, 100),
+      vcoins:
+          (_pet.vcoins + VCoinsReward.relapsePenalty).clamp(0, 999999).toInt(),
+      happiness: (_pet.happiness - 18).clamp(0, 100).toInt(),
+      health: (_pet.health - 6).clamp(0, 100).toInt(),
       lastUpdate: DateTime.now(),
     );
+    _recordCoins();
     _events.insert(0, 'Relapse logged: cigarette');
     notifyListeners();
   }
@@ -82,10 +111,13 @@ class PetProvider extends ChangeNotifier {
     _cravingsToday += 1;
     _pet = _pet.copyWith(
       mood: intensity >= 4 ? PetMood.proud : PetMood.happy,
-      vcoins: (_pet.vcoins + VCoinsReward.cravingLog).clamp(0, 999999),
-      happiness: (_pet.happiness + 3).clamp(0, 100),
+      vcoins: (_pet.vcoins + VCoinsReward.cravingLog)
+          .clamp(0, 999999)
+          .toInt(),
+      happiness: (_pet.happiness + 3).clamp(0, 100).toInt(),
       lastUpdate: DateTime.now(),
     );
+    _recordCoins();
     _events.insert(0, '+2 VCoins: craving logged ($reason, $intensity/5)');
     notifyListeners();
   }
@@ -112,9 +144,10 @@ class PetProvider extends ChangeNotifier {
     _pet = _pet.copyWith(
       vcoins: _pet.vcoins - price,
       mood: PetMood.excited,
-      happiness: (_pet.happiness + 5).clamp(0, 100),
+      happiness: (_pet.happiness + 5).clamp(0, 100).toInt(),
       lastUpdate: DateTime.now(),
     );
+    _recordCoins();
     _events.insert(0, 'Bought $itemName for $price VCoins');
     notifyListeners();
   }
@@ -127,7 +160,7 @@ class PetProvider extends ChangeNotifier {
       daysWithoutNicotine: 0,
       moneySaved: 0.0,
       vcoins: 0,
-      happiness: 80,
+      happiness: 100,
       health: 100,
       createdAt: DateTime.now(),
       lastUpdate: DateTime.now(),
@@ -137,7 +170,35 @@ class PetProvider extends ChangeNotifier {
     _cravingsToday = 0;
     _relapseCount = 0;
     _events.clear();
+    _recordWalletSnapshot();
     notifyListeners();
+  }
+
+  void _recordWalletSnapshot() {
+    final walletId = _walletId;
+    if (walletId == null) return;
+
+    unawaited(
+      _walletRepository.recordMoneySaved(
+        walletId: walletId,
+        amount: _pet.moneySaved,
+      ),
+    );
+    unawaited(
+      _walletRepository.recordCoins(
+        walletId: walletId,
+        amount: _pet.vcoins,
+      ),
+    );
+  }
+
+  void _recordCoins() {
+    final walletId = _walletId;
+    if (walletId == null) return;
+
+    unawaited(
+      _walletRepository.recordCoins(walletId: walletId, amount: _pet.vcoins),
+    );
   }
 
   bool _isMilestone(int days) =>

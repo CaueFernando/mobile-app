@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/pet_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../utils/constants.dart';
 
@@ -105,6 +106,13 @@ class GoogleLoginScreen extends StatelessWidget {
 
     try {
       await userProvider.signInWithGoogle();
+
+      if (!context.mounted) return;
+
+      final userId = userProvider.user?.id;
+      if (userId != null) {
+        await context.read<PetProvider>().loadWalletForUser(userId);
+      }
 
       if (!context.mounted) return;
 
